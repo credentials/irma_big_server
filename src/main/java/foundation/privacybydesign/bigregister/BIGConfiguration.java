@@ -4,6 +4,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.irmacard.api.common.util.GsonUtil;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -52,12 +54,17 @@ public class BIGConfiguration {
         }
     }
 
-	private static byte[] getResource(String filename) throws IOException {
-		File file = new File("/home/ayke/src/bigregister/" + filename);
-		return convertSteamToByteArray(new FileInputStream(file), 2048);
+	public static byte[] getResource(String filename) throws IOException {
+		URL url = BIGConfiguration.class.getClassLoader().getResource(filename);
+		if (url == null)
+			throw new IOException("Could not load file " + filename);
+
+		URLConnection urlCon = url.openConnection();
+		urlCon.setUseCaches(false);
+		return convertSteamToByteArray(urlCon.getInputStream(), 2048);
 	}
 
-    public static byte[] convertSteamToByteArray(InputStream stream, int size) throws IOException {
+	public static byte[] convertSteamToByteArray(InputStream stream, int size) throws IOException {
 		byte[] buffer = new byte[size];
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 

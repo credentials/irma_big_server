@@ -61,7 +61,7 @@ public class RestApi {
         try {
             Type t = new TypeToken<Map<AttributeIdentifier, String>>() {}.getType();
             JwtParser<Map<AttributeIdentifier, String>> parser
-				= new JwtParser<>(t, false, conf.getDisclosureJwtMaxAge(), "disclosure_result", "attributes");
+                = new JwtParser<>(t, false, conf.getDisclosureJwtMaxAge(), "disclosure_result", "attributes");
             parser.setSigningKey(conf.getApiServerPublicKey());
             parser.parseJwt(disclosureJWT);
             disclosureAttrs = parser.getPayload();
@@ -69,10 +69,10 @@ public class RestApi {
             return Response.status(Response.Status.BAD_REQUEST).entity("Could not verify JWT").build();
         }
 
-        String initials = disclosureAttrs.get(new AttributeIdentifier("pbdf.pbdf.idin.initials"));
-        String familyName = disclosureAttrs.get(new AttributeIdentifier("pbdf.pbdf.idin.familyname"));
-        String gender = disclosureAttrs.get(new AttributeIdentifier("pbdf.pbdf.idin.gender"));
-        String dateOfBirthString = disclosureAttrs.get(new AttributeIdentifier("pbdf.pbdf.idin.dateofbirth"));
+        String initials = disclosureAttrs.get(new AttributeIdentifier(conf.getInitialsAttribute()));
+        String familyName = disclosureAttrs.get(new AttributeIdentifier(conf.getFamilyNameAttribute()));
+        String gender = disclosureAttrs.get(new AttributeIdentifier(conf.getGenderAttribute()));
+        String dateOfBirthString = disclosureAttrs.get(new AttributeIdentifier(conf.getDateOfBirthAttribute()));
 
         // These attributes can be set for debugging purposes - to impersonate someone else.
         // Must only be used in a test environment!
