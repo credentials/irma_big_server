@@ -117,6 +117,7 @@ public class RestApi {
             // The initial is a bit more difficult, I'm not sure people will always use the same initials.
             // So only check the first character, which should match.
             // Unfortunately, we can't match on prefix as that's not provided by iDIN.
+            // See BIGService.doRequest for more details about prefix handling in the BIG register.
             return Response.status(Response.Status.BAD_REQUEST).entity("No matching result found").build();
         }
 

@@ -97,6 +97,13 @@ public class BIGService {
 
         ListHcpApproxRequest request = new ListHcpApproxRequest();
         try {
+            // Prefix handling in the BIG register is pretty inconsistent.
+            // Digging through the BIG database, I've found
+            // * the prefix is sometimes null and sometimes an empty string ""
+            // * When people do have a prefix, it is sometimes attached in front of the birth surname
+            //   instead of set in the prefix field.
+            // * When setting the prefix to null, it won't search for it.
+            // The name that is matched on appears to be a simple string search on the mailing name.
             request.setName(name);
             if (dateOfBirth != null) {
                 // BIG uses the ISO8601 format for the birth date.
