@@ -1,5 +1,7 @@
 /**
- * Created by ayke on 26-4-17.
+ * This is a debugging frontend for the BIG register API.
+ * Use a single parameter: the name of the person you're looking for.
+ * It will show all information it can gather from that.
  */
 
 package foundation.privacybydesign.bigregister;
@@ -10,7 +12,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.soap.SOAPException;
 import java.util.*;
 
-// This is a debugging frontend for the BIG register API.
 public class BIGRegisterApp {
     public static void main(String[] args) throws SOAPException {
         String name = ".";
