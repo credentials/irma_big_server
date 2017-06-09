@@ -4,7 +4,8 @@ version '0.1'
 apply plugin: 'java'
 apply plugin: "org.akhikhl.gretty"
 
-sourceCompatibility = 1.8
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 configurations {
     cxfTool

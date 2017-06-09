@@ -10,7 +10,7 @@ import nl.cibg.services.externaluser.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.soap.SOAPException;
-import java.util.*;
+import java.util.List;
 
 public class BIGRegisterApp {
     public static void main(String[] args) throws SOAPException {
@@ -43,7 +43,8 @@ public class BIGRegisterApp {
                 } catch (NumberFormatException e) {
                     groupCode = 0;
                 }
-                System.out.println("\tGroup:         " + BIGService.GROUPS.getOrDefault(groupCode, group.getProfessionalGroupCode()));
+                System.out.println("\tGroup:         " +
+                        (BIGService.GROUPS.containsKey(groupCode) ? BIGService.GROUPS.get(groupCode) : group.getProfessionalGroupCode()));
                 System.out.println("\t  BIG number:  " + group.getArticleRegistrationNumber());
                 System.out.println("\t  Start date:  " + group.getArticleRegistrationStartDate());
                 // End date appears to be 0001-01-01T00:00:00
@@ -65,7 +66,8 @@ public class BIGRegisterApp {
                     // specified list of integers.
                     specialismType = 0;
                 }
-                System.out.println("\tSpecialism:    " + BIGService.SPECIALISMS.getOrDefault(specialismType, specialism.getTypeOfSpecialismId().toString()));
+                System.out.println("\tSpecialism:    " + (BIGService.SPECIALISMS.containsKey(specialismType) ?
+                        BIGService.SPECIALISMS.get(specialismType) : specialism.getTypeOfSpecialismId().toString()));
                 System.out.println("\t  BIG number:  " + specialism.getArticleRegistrationNumber());
                 System.out.println("\t  ID:          " + specialism.getSpecialismId());
             }

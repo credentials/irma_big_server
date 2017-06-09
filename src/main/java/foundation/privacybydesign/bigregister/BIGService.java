@@ -207,7 +207,9 @@ public class BIGService {
             } catch (NumberFormatException e) {
                 throw new BIGFormatException("invalid profession number: '" + group.getProfessionalGroupCode() + "'");
             }
-            String professionName = GROUPS.getOrDefault(groupCode, group.getProfessionalGroupCode());
+            String professionName = GROUPS.get(groupCode);
+            if (professionName == null) professionName = group.getProfessionalGroupCode();
+
 
             BigDecimal number = group.getArticleRegistrationNumber();
             if (professions.containsKey(number)) {
@@ -240,7 +242,9 @@ public class BIGService {
                 // specified list of integers.
                 throw new BIGFormatException("specialism ID doesn't fit in an int");
             }
-            String specialismName = SPECIALISMS.getOrDefault(specialismType, specialism.getTypeOfSpecialismId().toString());
+            String specialismName = SPECIALISMS.get(specialismType);
+            if (specialismName == null) specialismName = specialism.getTypeOfSpecialismId().toString();
+
             BIGProfession profession = professions.get(specialism.getArticleRegistrationNumber());
             // This loses one field of information (the specialism ID), but that field appears largely irrelevant.
             // I don't even know what it means exactly, maybe the row ID in their database?
