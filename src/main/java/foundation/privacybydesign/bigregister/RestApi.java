@@ -28,6 +28,11 @@ public class RestApi {
     // We currently use the Dutch format, not the internal ISO8601 format.
     private static String IRMA_DATE_FORMAT = "dd-MM-yyyy";
 
+    private static String NO_RESULTS         = "error:no-results";
+    private static String MULTIPLE_RESULTS   = "error:multiple-results";
+    private static String INVALID_JWT        = "error:invalid-jwt";
+    private static String BIG_REQUEST_FAILED = "error:big-request-failed";
+
     // Get a disclosure request - to get the right credential from the user.
     @GET
     @Path("/request-search-attrs")
@@ -66,7 +71,7 @@ public class RestApi {
             parser.parseJwt(disclosureJWT);
             disclosureAttrs = parser.getPayload();
         } catch (ExpiredJwtException e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Could not verify JWT").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(INVALID_JWT).build();
         }
 
         String initials = disclosureAttrs.get(new AttributeIdentifier(conf.getInitialsAttribute()));
@@ -85,6 +90,7 @@ public class RestApi {
         try {
             dateOfBirth = new SimpleDateFormat(IRMA_DATE_FORMAT).parse(dateOfBirthString);
         } catch (ParseException e) {
+            // Should never happen.
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Could not parse date").build();
         }
 
@@ -94,19 +100,19 @@ public class RestApi {
         } catch (BIGRequestException e) {
             // This should indicate a problem on their end or with the connection, not on our side.
             System.out.println("BIG request error: " + e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to do request to BIG register").build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(BIG_REQUEST_FAILED).build();
         }
 
         if (results.size() < 1) {
             // TODO: this error should be shown to the user somehow.
             // This can happen when e.g. there is a mismatch (e.g. in the name) or someone tries to request a property
             // while they're not registered.
-            return Response.status(Response.Status.BAD_REQUEST).entity("No results found").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(NO_RESULTS).build();
         }
 
         if (results.size() > 1) {
             // TODO: notify someone of this situation. It shouldn't happen.
-            return Response.status(Response.Status.BAD_REQUEST).entity("Multiple results found").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(MULTIPLE_RESULTS).build();
         }
 
         ListHcpApprox4 result = results.get(0);
@@ -118,7 +124,10 @@ public class RestApi {
             // So only check the first character, which should match.
             // Unfortunately, we can't match on prefix as that's not provided by iDIN.
             // See BIGService.doRequest for more details about prefix handling in the BIG register.
-            return Response.status(Response.Status.BAD_REQUEST).entity("No matching result found").build();
+            // Sent a NO_RESULTS messsage, as it is essentially the same
+            // problem, with the difference that we do the validation instead
+            // of BIG.
+            return Response.status(Response.Status.BAD_REQUEST).entity(NO_RESULTS).build();
         }
 
         Collection<BIGProfession> professions;
@@ -184,8 +193,11 @@ public class RestApi {
         }
 
         if (credentials.size() == 0) {
-            // May happen when all credentials lie in the past - thus the whole registration has ended.
-            return Response.status(Response.Status.BAD_REQUEST).entity("No credentials to disclose").build();
+            // May happen when all credentials lie in the past - thus the whole
+            // registration has ended.
+            // TODO: maybe we want to indicate the real reason - that this
+            // person is probably not registered anymore?
+            return Response.status(Response.Status.BAD_REQUEST).entity(NO_RESULTS).build();
         }
 
         // Now generate the credential issuing request!
