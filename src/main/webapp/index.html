@@ -15,44 +15,74 @@
 		<script type="text/javascript" src="common.js" defer></script>
 	</head>
 	<body>
-
 		<div class="container">
 			<div class="row">
 				<div class="col-xs-12 col-md-8 col-lg-6 col-md-offset-2 col-lg-offset-3">
-					<h1>BIG-register</h1>
+                    <div id="window-before-request">
+                        <!-- Window before attributes are loaded -->
+                        <h1>BIG-register</h1>
 
-					<div id="result-alert" class="alert hidden"></div>
+                        <div id="result-alert" class="alert hidden"></div>
 
-					<p>
-						Het Nederlandse <a href="https://www.bigregister.nl/">BIG-register</a> registreert zorgverleners.
-						Door attributen uit het BIG-register in IRMA te laden kunt u bewijzen dat u een beroep in de zorg
-						mag uitoefenen en welke specialiteiten u heeft.
-					</p>
+                        <p>
+                            Het Nederlandse <a href="https://www.bigregister.nl/">BIG-register</a> registreert zorgverleners.
+                            Door attributen uit het BIG-register in IRMA te laden kunt u bewijzen dat u een beroep in de zorg
+                            mag uitoefenen en welke specialiteiten u heeft.
+                        </p>
 
-					<p>Hiervoor zijn twee eisen:</p>
-					<ul>
-						<li>
-							U staat op dit moment <a href="https://www.bigregister.nl/registratie">ingeschreven in het
-							BIG-register</a>.
-						</li>
-						<li>
-							U heeft de <a href="https://privacybydesign.foundation/uitgifte/idin">iDIN attributen</a>
-							geladen.
-						</li>
-					</ul>
+                        <p>Hiervoor zijn twee eisen:</p>
+                        <ul>
+                            <li>
+                                U staat op dit moment <a href="https://www.bigregister.nl/registratie">ingeschreven in het
+                                BIG-register</a>.
+                            </li>
+                            <li>
+                                U heeft de <a href="https://privacybydesign.foundation/uitgifte/idin">iDIN attributen</a>
+                                geladen.
+                            </li>
+                        </ul>
 
-					<p>
-						Eerst wordt u gevraagd om een aantal van uw iDIN attributen vrij te geven, namelijk naam,
-						geboortedatum en geslacht. Daarmee zoeken wij in het BIG-register naar uw registratie.
-						Als we die hebben gevonden kunt u een aantal BIG-attributen attributen, namelijk beroep,
-						nummer, en specialiteit, in uw IRMA-app laden.
-					</p>
+                        <p>
+                            Eerst wordt u gevraagd om een aantal van uw iDIN attributen vrij te geven, namelijk naam,
+                            geboortedatum en geslacht. Daarmee zoeken wij in het BIG-register naar uw registratie.
+                            Als we die hebben gevonden kunt u een aantal BIG-attributen attributen, namelijk beroep,
+                            nummer, en specialiteit, in uw IRMA-app laden.
+                        </p>
 
-					<p>
-						<button class="btn btn-primary" id="btn-request" disabled>Laad attributen uit het BIG-register</button>
-						<span id="progress"></span>
-					</p>
+                        <p>
+                            <button class="btn btn-primary" id="request-attributes" disabled>Laad attributen uit het BIG-register</button>
+                            <span id="progress"></span>
+                        </p>
+					</div>
 
+					<div id="window-after-request" style="display: none;">
+                        <!-- Attributes have been loaded. User can add them
+                        to their app -->
+                        <h2>Beschikbare BIG register attributen</h2>
+
+                        <p>De volgende attributen kunnen nu in uw IRMA app geladen worden:</p>
+                        <table class="table" id="attributes">
+                            <tr>
+                                <th scope="row">BIG-nummer</th>
+                                <td class="number">asdf</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Startdatum</th>
+                                <td class="startdate"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Beroepsgroep</th>
+                                <td class="profession"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Specialismen</th>
+                                <td class="specialism"></td>
+                            </tr>
+                        </table>
+
+                        <button id="issue-attributes" class="btn btn-primary">Laad attributen in IRMA app</button>
+                        <button id="back-from-attributes" class="btn">Annuleren</button>
+                    </div>
 				</div>
 			</div>
 		</div>

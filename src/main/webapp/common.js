@@ -9,10 +9,16 @@ var MESSAGES = {
     'error:big-request-failed': 'Kan niet communiceren met het BIG register.',
 };
 
+var credentialsJWT;
+
 function init() {
-    $('#btn-request')
+    $('#request-attributes')
         .on('click', requestAttributes)
         .prop('disabled', false);
+    $('#issue-attributes')
+        .on('click', issueAttributes);
+    $('#back-from-attributes')
+        .on('click', cancelAttributes);
 }
 
 function requestAttributes() {
@@ -49,27 +55,22 @@ function requestAttributesFromBackend(disclosureJWT) {
         processData: false, // unnecessary as we're sending a string
         contentType: 'text/plain',
     })
-        .done(function(credentialsJWT) {
-            console.log('issuing JWT', credentialsJWT);
-            // Work around a bug in irma_js (?)
-            showProgress('Waiting for popup to close...');
-            setTimeout(function () {
-                showProgress('Issuing credential...');
-                IRMA.issue(credentialsJWT,
-                    function() { // success
-                        console.log('issue success!');
-                        requestEnd('success', 'Credential voor het BIG register vrijgegeven')
-                    },
-                    function(msg) { // cancel
-                        console.warn('cancelled while issuing:', msg);
-                        requestEnd('cancel');
-                    },
-                    function(errormsg) { // error
-                        console.error('error while issuing:', errormsg)
-                        requestEnd('danger', 'Kan het BIG credential niet vrijgeven', errormsg);
-                    }
-                );
-            }, 500);
+        .done(function(jwt) {
+            credentialsJWT = jwt;
+            console.log('issuing JWT', jwt);
+
+            // Very crude JWT parser
+            var credentials = JSON.parse(atob(jwt.split('.')[1]));
+
+            // Show the new screen with the list of attributes and a button
+            // to issue them.
+            $('#window-before-request').hide();
+            $('#window-after-request').show();
+            $('#attributes .number').text(credentials.iprequest.request.credentials[0].attributes.bignumber);
+            $('#attributes .startdate').text(credentials.iprequest.request.credentials[0].attributes.startdate);
+            $('#attributes .profession').text(credentials.iprequest.request.credentials[0].attributes.profession);
+            $('#attributes .specialism').text(credentials.iprequest.request.credentials[0].attributes.specialism);
+            showProgress('Waiting for OK button...'); // invisible to user
         })
         .fail(function(jqXhr, textStatus) {
             var errormsg = jqXhr.responseText;
@@ -125,6 +126,39 @@ function requestEnd(result, message, errormsg) {
             .append('<br>')
             .append($('<small></small>').text(errormsg))
     }
+}
+
+function issueAttributes() {
+    showProgress('Issuing credential...');
+    IRMA.issue(credentialsJWT,
+        function() { // success
+            console.log('issue success!');
+            requestEnd('success', 'Credential voor het BIG register vrijgegeven')
+
+            // Go back to the start screen - we're done.
+            $('#window-before-request').show();
+            $('#window-after-request').hide();
+        },
+        function(msg) { // cancel
+            console.warn('cancelled while issuing:', msg);
+            requestEnd('cancel');
+            // The user can try again now, or press 'cancel' on the issue screen.
+        },
+        function(errormsg) { // error
+            console.error('error while issuing:', errormsg)
+            requestEnd('danger', 'Kan het BIG credential niet vrijgeven', errormsg);
+
+            // Go back to the start screen to show the error.
+            $('#window-before-request').show();
+            $('#window-after-request').hide();
+        }
+    );
+}
+
+function cancelAttributes() {
+    requestEnd('cancel');
+    $('#window-before-request').show();
+    $('#window-after-request').hide();
 }
 
 init();
