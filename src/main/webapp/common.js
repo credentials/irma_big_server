@@ -1,6 +1,6 @@
 'use strict';
 
-var BIGSERVER = '/bigregister/api/';
+var BIGSERVER = '/tomcat/irma_big_server/api/';
 
 var MESSAGES = {
     'error:no-results':         'Zoeken in het BIG register leverde geen resultaten op. Neem contact op met irma \'at\' privacybydesign.foundation als u wel in het BIG register staat.',
