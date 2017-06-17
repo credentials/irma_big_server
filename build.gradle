@@ -14,6 +14,7 @@ configurations {
 project.ext {
     cxfVersion = '3.1.11'
     wsdlFile = 'src/wsdl/BIGRegister.wsdl'
+    wsdlLocation = '/BIGRegister.wsdl'
     outputDir = file("$buildDir/generated-src/cxf")
     sourceSets.main.java.srcDir outputDir
 }
@@ -55,7 +56,6 @@ dependencies {
     runtime "org.apache.cxf:cxf-rt-transports-http-jetty:$cxfVersion"
 }
 
-
 task wsdl2java(type: JavaExec) {
     inputs.file file(wsdlFile)
     outputs.dir outputDir
@@ -74,8 +74,11 @@ task wsdl2java(type: JavaExec) {
     args '-verbose'
     args '-validate'
     args '-autoNameResolution'
+    args '-wsdlLocation', wsdlLocation
     args wsdlFile
 }
+
+compileJava.dependsOn wsdl2java
 
 gretty {
     contextConfigFile = file('src/main/resources/jetty-env.xml')
