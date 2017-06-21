@@ -21,3 +21,8 @@ G2" certificate, with something like:
 
     sudo keytool -keystore $(find $JAVA_HOME -name cacerts) storepass changeit -importcert -alias staatdernederlandeng2 -file StaatderNederlandenRootCA-G2.der
 
+## Subscribing to service changes
+
+If you manage this application, it's a good idea to subscribe to service changes
+so you're kept up-to-date: [Servicemeldingen
+webservice](https://www.bigregister.nl/zoek-zorgverlener/zoeken-eigen-systeem/servicemeldingen-webservice).
