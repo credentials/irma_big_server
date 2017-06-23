@@ -1,6 +1,8 @@
 package foundation.privacybydesign.bigregister;
 
 import nl.cibg.services.externaluser.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.soap.DetailEntry;
 import javax.xml.soap.SOAPFault;
@@ -13,6 +15,7 @@ import java.util.*;
  * Abstract away the BIG SOAP API.
  */
 public class BIGService {
+    private static Logger logger = LoggerFactory.getLogger(BIGService.class);
 
     // All professions and specialisms as defined by the BIG register. Source:
     // https://www.bigregister.nl/zoek-zorgverlener/documenten/publicaties/2017/03/03/handleiding-webservice-big-register
@@ -208,7 +211,10 @@ public class BIGService {
                 throw new BIGFormatException("invalid profession number: '" + group.getProfessionalGroupCode() + "'");
             }
             String professionName = GROUPS.get(groupCode);
-            if (professionName == null) professionName = group.getProfessionalGroupCode();
+            if (professionName == null) {
+                professionName = group.getProfessionalGroupCode();
+                logger.error("Unknown profession code: " + professionName);
+            }
 
 
             BigDecimal number = group.getArticleRegistrationNumber();
@@ -243,7 +249,11 @@ public class BIGService {
                 throw new BIGFormatException("specialism ID doesn't fit in an int");
             }
             String specialismName = SPECIALISMS.get(specialismType);
-            if (specialismName == null) specialismName = specialism.getTypeOfSpecialismId().toString();
+            if (specialismName == null) {
+                // There is a specialism that is unknown to us.
+                specialismName = specialism.getTypeOfSpecialismId().toString();
+                logger.error("Unknown specialism code: " + specialismName);
+            }
 
             BIGProfession profession = professions.get(specialism.getArticleRegistrationNumber());
             // This loses one field of information (the specialism ID), but that field appears largely irrelevant.

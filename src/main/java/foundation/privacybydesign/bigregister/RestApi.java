@@ -19,6 +19,8 @@ import org.irmacard.api.common.issuing.IdentityProviderRequest;
 import org.irmacard.api.common.issuing.IssuingRequest;
 import org.irmacard.credentials.info.AttributeIdentifier;
 import org.irmacard.credentials.info.CredentialIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The REST api to be used by the web client.
@@ -32,6 +34,8 @@ public class RestApi {
     private static String MULTIPLE_RESULTS   = "error:multiple-results";
     private static String INVALID_JWT        = "error:invalid-jwt";
     private static String BIG_REQUEST_FAILED = "error:big-request-failed";
+
+    private static Logger logger = LoggerFactory.getLogger(RestApi.class);
 
     // Get a disclosure request - to get the right credential from the user.
     @GET
@@ -104,14 +108,15 @@ public class RestApi {
         }
 
         if (results.size() < 1) {
-            // TODO: this error should be shown to the user somehow.
-            // This can happen when e.g. there is a mismatch (e.g. in the name) or someone tries to request a property
-            // while they're not registered.
+            // This can happen when e.g. there is a mismatch (e.g. in the name)
+            // or someone tries to request a property while they're not
+            // registered.
             return Response.status(Response.Status.BAD_REQUEST).entity(NO_RESULTS).build();
         }
 
         if (results.size() > 1) {
             // TODO: notify someone of this situation. It shouldn't happen.
+            logger.error("Multiple results found in BIG query!");
             return Response.status(Response.Status.BAD_REQUEST).entity(MULTIPLE_RESULTS).build();
         }
 
