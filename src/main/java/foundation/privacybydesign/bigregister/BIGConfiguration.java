@@ -13,7 +13,7 @@ import java.security.PublicKey;
  */
 public class BIGConfiguration extends BaseConfiguration {
     private static BIGConfiguration instance;
-    private static final String filename = "config.json";
+    private static final String CONFIG_FILENAME = "config.json";
 
     // JSON configuration properties (with default values)
     private String api_server_public_key = "";
@@ -35,7 +35,7 @@ public class BIGConfiguration extends BaseConfiguration {
     public static BIGConfiguration getInstance() {
         if (instance == null) {
             try {
-                String json = new String(getResource(filename));
+                String json = new String(getResource(CONFIG_FILENAME));
                 instance = GsonUtil.getGson().fromJson(json, BIGConfiguration.class);
             } catch (IOException e) {
                 System.out.println("could not load configuration");
