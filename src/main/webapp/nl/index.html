@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<meta charset="utf-8"/>
+		<title>BIG register</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<meta value="https://privacybydesign.foundation/tomcat/irma_api_server/server/" name="irma-web-server">
+		<meta value="https://privacybydesign.foundation/tomcat/irma_api_server/api/v2/" name="irma-api-server">
+
+		<link rel="stylesheet" href="https://privacybydesign.foundation/tomcat/irma_api_server/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+		<script src="https://privacybydesign.foundation/tomcat/irma_api_server/bower_components/jquery/dist/jquery.js" defer></script>
+		<script src="https://privacybydesign.foundation/tomcat/irma_api_server/client/irma.js" defer></script>
+		<script src="common.js" defer></script>
+	</head>
+	<body>
+	  <div class="container">
+	    <div class="row">
+	      <div class="col-xs-12 col-md-8 col-lg-6 col-md-offset-2 col-lg-offset-3">
+                <div id="window-before-request">
+                  <!-- Window before attributes are loaded -->
+                  <h1>Medische beroeps-attributen laden uit het BIG-register</h1>
+		  
+                  <div id="result-alert" class="alert hidden"></div>
+
+                  <p>
+                    Het
+                    Nederlandse <a href="https://www.bigregister.nl/">BIG-register</a>
+                    bevat gegevens van geregistreerde zorgverleners,
+                    in het bijzonder hun beroepen en
+                    registratienummers. Indien u geregistreerd staat
+                    in het BIG register, kunt u hier deze attributen
+                    over u uit het BIG-register in uw IRMA app
+                    laden. Daarmee kunt u aan anderen bewijzen,
+                    bijvoorbeeld bij het inloggen, welke medische
+                    beroep/specialiteiten u beoefent, met welk
+                    registratienummer.
+                  </p>
+
+                  <p>Hiervoor zijn twee dingen nodig:</p>
+                  <ul>
+                    <li>
+                      U staat op dit moment daadwerkelijk ingeschreven
+                      in
+                      het <a href="https://www.bigregister.nl/registratie">BIG-register</a>.</li>
+                    <li>
+                      U heeft de IRMA
+app <a href="https://privacybydesign.foundation/download/">ge&iuml;nstalleerd</a>
+heeft daarin tenminste
+de <a href="https://privacybydesign.foundation/uitgifte/idin">iDIN
+attributen</a> geladen.</li>
+                  </ul>
+		  
+                  <p>
+                    Bij deze uitgifte van attributen uit het BIG
+                    register wordt u eerst gevraagd om een aantal van
+                    uw iDIN attributen vrij te geven, namelijk uw
+                    naam, geboortedatum en geslacht. Daarmee zoekt de
+                    stichting Privacy by Design in het (openbare)
+                    BIG-register om te kijken of u daar in staat. Als
+                    dat een eenduidige geldige registratie oplevert,
+                    kan de stichting een aantal BIG-attributen uit die
+                    registratie in uw IRMA-app laden, namelijk: uw
+                    beroepsomschrijving, uw BIG-nummer, en uw medische
+                    specialiteit(en). Hierna verwijdert de stichting
+                    al uw gegevens uit de eigen bestanden. Wanneer u
+                    niet voorkomt in het register worden er geen
+                    attributen uitgegeven.
+		  </p>
+		  <br>
+                  <p>
+                    <button class="btn btn-primary"
+                            id="request-attributes" disabled>Laad
+                            attributen uit het BIG-register</button>
+                            <span id="progress"></span>
+                  </p>
+                </div>
+
+                <div id="window-after-request" style="display: none;">
+                  <!-- Attributes have been loaded. User can add them
+                       to their app -->
+                  <h2>Beschikbare BIG-register attributen</h2>
+		  
+                  <p>De volgende attributen kunnen nu in uw IRMA
+                    app geladen worden.</p>
+                  <table class="table" id="attributes">
+                    <tr>
+                      <th scope="row">BIG-nummer</th>
+                      <td class="number">asdf</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Startdatum</th>
+                      <td class="startdate"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Beroepsgroep</th>
+                      <td class="profession"></td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Specialismen</th>
+                      <td class="specialism"></td>
+                    </tr>
+                  </table>
+
+                  <button id="issue-attributes" class="btn
+                        btn-primary">Laad attributen in IRMA
+                        app</button>
+                        <button id="back-from-attributes"
+                        class="btn">Annuleren</button>
+                </div>
+		<br>
+		<br>
+		<p>
+		  <a href="https://privacybydesign.foundation/uitgifte/">Terug</a> naar attribuut uitgifte.
+		</p>
+	      </div>
+	    </div>
+	  </div>
+	</body>
+</html>
+

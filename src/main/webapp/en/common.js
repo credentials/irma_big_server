@@ -3,10 +3,10 @@
 var BIGSERVER = '/tomcat/irma_big_server/api/';
 
 var MESSAGES = {
-    'error:no-results':         'Zoeken in het BIG register leverde geen resultaten op. Neem contact op met irma \'at\' privacybydesign.foundation als u wel in het BIG register staat.',
-    'error:multiple-results':   'Meerdere resultaten gevonden.',
-    'error:invalid-jwt':        'Kan de JWT niet verifieren - loopt de klok misschien ongelijk?',
-    'error:big-request-failed': 'Kan niet communiceren met het BIG register.',
+    'error:no-results':         'Searching the BIG-register with your data was unsuccesful. Please contact irma \'at\' privacybydesign.foundation if you do have a BIG-registration.',
+    'error:multiple-results':   'With your data multiple results have been found in the BIG-register; therefore, no unambiguous attributes can be issued.',
+    'error:invalid-jwt':        'JWT cannot be verified - is there an asynchrony of clocks?',
+    'error:big-request-failed': 'Communication with the BIG-register failed.',
 };
 
 var credentialsJWT;
@@ -39,10 +39,10 @@ function requestAttributes() {
             console.warn('user cancelled disclosure');
         }, function(errormsg) { // error
             console.error('could not request iDIN attributes:', errormsg);
-            requestEnd('danger', 'Kan de iDIN gegevens niet ophalen', errormsg);
+            requestEnd('danger', 'iDIN data cannot be collected', errormsg);
         });
     }).fail(function(data) {
-        requestEnd('danger', 'Kan geen verbinding maken met de backend server');
+        requestEnd('danger', 'Connection with the backend server failed');
     });
 }
 
@@ -92,13 +92,13 @@ function requestAttributesFromBackend(disclosureJWT) {
                 // due to some issue on the client side - these are really our
                 // fault.
                 // The actual error can be seen in the developer console.
-                message = 'Onbekend probleem';
+                message = 'Unknown problem';
             }
 
             if (errormsg === 'error:no-results') {
-                requestEnd('danger', 'Niet gevonden in het BIG register', message);
+                requestEnd('danger', 'No registration was found in the BIG-register', message);
             } else {
-                requestEnd('danger', 'Kan de credentials niet aan de backend server vragen', message);
+                requestEnd('danger', 'Credentials cannot be requested from the backend server', message);
             }
         });
 }
@@ -133,7 +133,7 @@ function issueAttributes() {
     IRMA.issue(credentialsJWT,
         function() { // success
             console.log('issue success!');
-            requestEnd('success', 'Credential voor het BIG register vrijgegeven')
+            requestEnd('success', 'Credential for the BIG-register released')
 
             // Go back to the start screen - we're done.
             $('#window-before-request').show();
@@ -146,7 +146,7 @@ function issueAttributes() {
         },
         function(errormsg) { // error
             console.error('error while issuing:', errormsg)
-            requestEnd('danger', 'Kan het BIG credential niet vrijgeven', errormsg);
+            requestEnd('danger', 'BIG-credential cannot be released', errormsg);
 
             // Go back to the start screen to show the error.
             $('#window-before-request').show();
