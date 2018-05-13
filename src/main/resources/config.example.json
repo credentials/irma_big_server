@@ -1,0 +1,12 @@
+{
+	"api_server_public_key": "",
+	"scheme_manager": "pbdf",
+	"big_issuer": "pbdf",
+	"big_credential": "big",
+	"server_name": "irma_big_server",
+	"human_name": "Privacy by Design Foundation",
+	"family_name_attribute": "pbdf.pbdf.idin.familyname",
+	"initials_attribute": "pbdf.pbdf.idin.initials",
+	"gender_attribute": "pbdf.pbdf.idin.gender",
+	"date_of_birth_attribute": "pbdf.pbdf.idin.dateofbirth"
+}
