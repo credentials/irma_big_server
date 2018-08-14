@@ -6,6 +6,7 @@ import foundation.privacybydesign.common.BaseConfiguration;
 
 import java.io.*;
 import java.security.KeyManagementException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 
 /**
@@ -47,9 +48,13 @@ public class BIGConfiguration extends BaseConfiguration {
 
     public PublicKey getApiServerPublicKey() throws KeyManagementException {
         if (apiServerPublicKey == null) {
-            apiServerPublicKey = loadPublicKey(api_server_public_key);
+            apiServerPublicKey = BaseConfiguration.getPublicKey(api_server_public_key);
         }
         return apiServerPublicKey;
+    }
+
+    public PrivateKey getPrivateKey() throws KeyManagementException {
+        return BaseConfiguration.getPrivateKey("sk.der");
     }
 
     public SignatureAlgorithm getJwtAlgorithm() {
