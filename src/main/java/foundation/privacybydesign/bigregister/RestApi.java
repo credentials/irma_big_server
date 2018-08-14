@@ -85,10 +85,10 @@ public class RestApi {
 
         // These attributes can be set for debugging purposes - to impersonate someone else.
         // Must only be used in a test environment!
-        //initials = "";
-        //familyName = "";
-        //gender = "";
-        //dateOfBirthString = "";
+        //String initials = "";
+        //String familyName = "";
+        //String gender = "";
+        //String dateOfBirthString = "";
 
         Date dateOfBirth;
         try {
@@ -98,9 +98,24 @@ public class RestApi {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Could not parse date").build();
         }
 
+        String bigNumber;
+        try {
+            bigNumber = new BIGWebSearch().getBIGNumber(familyName, dateOfBirth, gender);
+        } catch (BIGRequestException e) {
+            // This should indicate a problem on their end or with the connection, not on our side.
+            System.out.println("BIG request error: " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(BIG_REQUEST_FAILED).build();
+        } catch (BIGWebNoResultsException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(NO_RESULTS).build();
+        } catch (BIGWebTooManyException e) {
+            // TODO: notify someone of this situation. It shouldn't happen.
+            logger.error("Multiple results found in BIG query!");
+            return Response.status(Response.Status.BAD_REQUEST).entity(MULTIPLE_RESULTS).build();
+        }
+
         List<ListHcpApprox4> results;
         try {
-            results = new BIGService().doRequest(familyName, dateOfBirth, gender);
+            results = new BIGService().doRequest(bigNumber);
         } catch (BIGRequestException e) {
             // This should indicate a problem on their end or with the connection, not on our side.
             System.out.println("BIG request error: " + e.getMessage());

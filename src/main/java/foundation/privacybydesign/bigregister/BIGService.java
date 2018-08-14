@@ -92,7 +92,7 @@ public class BIGService {
 
     // Provide a simple method for the SOAP API.
     // It either returns the requested values, or returns an error.
-    public List<ListHcpApprox4> doRequest(String name, Date dateOfBirth, String gender)
+    public List<ListHcpApprox4> doRequest(String bigNumber)
             throws BIGRequestException {
         // Create the SOAP client
         PublicV4 service = new PublicV4();
@@ -107,18 +107,7 @@ public class BIGService {
             //   instead of set in the prefix field.
             // * When setting the prefix to null, it won't search for it.
             // The name that is matched on appears to be a simple string search on the mailing name.
-            request.setName(name);
-            if (dateOfBirth != null) {
-                // BIG uses the ISO8601 format for the birth date.
-                request.setDateOfBirth(new SimpleDateFormat("yyyy-MM-dd").format(dateOfBirth));
-            }
-            if (gender.equals("male")) {
-                request.setGender("M");
-            } else if (gender.equals("female")) {
-                request.setGender("V");
-            } else {
-                // gender can also be unknown or unspecified
-            }
+            request.setRegistrationNumber(bigNumber);
 
             // This must be set, and it's the only valid value.
             request.setWebSite(SourceWebSite.RIBIZ);
@@ -169,7 +158,6 @@ public class BIGService {
             throw new BIGRequestException(fault.getFaultActor() + ": " + fault.getFaultCode());
         }
     }
-
 
     // Take a single ListHcpApprox4 result (one person) and convert this to a list of professions
     // (with attached BIG numbers, specialisms, etc.).
