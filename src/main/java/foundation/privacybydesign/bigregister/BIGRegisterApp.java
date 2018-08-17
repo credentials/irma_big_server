@@ -1,6 +1,6 @@
 /**
  * This is a debugging frontend for the BIG register API.
- * Use a single parameter: the name of the person you're looking for.
+ * Use a single parameter: the BIG of the person you're looking for.
  * It will show all information it can gather from that.
  */
 
@@ -14,16 +14,16 @@ import java.util.List;
 
 public class BIGRegisterApp {
     public static void main(String[] args) throws SOAPException {
-        String name = ".";
+        String bigNumber = ".";
         if (args.length >= 1) {
-            name = args[0];
+            bigNumber = args[0];
         }
 
         BIGService service = new BIGService();
         List<ListHcpApprox4> results;
         System.out.println("Requesting people...");
         try {
-            results = service.doRequest(name, null, "");
+            results = service.doRequest(bigNumber);
         } catch (BIGRequestException e) {
             System.out.println("Could not query the BIG database: " + e.getMessage());
             return;
