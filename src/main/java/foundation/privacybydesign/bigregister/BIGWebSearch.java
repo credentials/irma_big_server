@@ -9,9 +9,12 @@ import javax.ws.rs.client.*;
 import javax.ws.rs.core.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BIGWebSearch {
     private static Client client = ClientBuilder.newClient();
+    private static Logger logger = LoggerFactory.getLogger(BIGService.class);
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class BIGWebSearchEntry {
@@ -55,16 +58,17 @@ public class BIGWebSearch {
         } catch (UnsupportedEncodingException e) {
             throw new BIGRequestException("Unexpected encoding error: " + e.getMessage());
         }
-        // Date if available
-        if (dateOfBirth != null) {
-            queryBuilder.append("&dateOfBirth=");
-            queryBuilder.append(new SimpleDateFormat("dd-MM-yyyy").format(dateOfBirth));
-        }
+        // Date is also always present
+        queryBuilder.append("&dateOfBirth=");
+        queryBuilder.append(new SimpleDateFormat("dd-MM-yyyy").format(dateOfBirth));
         // Gender if available
         if (gender.equals("male")) {
             queryBuilder.append("&gender=1");
         } else if (gender.equals("female")) {
             queryBuilder.append("&gender=2");
+        } else {
+            logger.error("Unexpected gender " + gender);
+            throw new BIGRequestException("Unexpected value for gender");
         }
 
         try {

@@ -103,7 +103,7 @@ public class RestApi {
             bigNumber = new BIGWebSearch().getBIGNumber(familyName, dateOfBirth, gender);
         } catch (BIGRequestException e) {
             // This should indicate a problem on their end or with the connection, not on our side.
-            System.out.println("BIG request error: " + e.getMessage());
+            logger.error("BIG request error: " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(BIG_REQUEST_FAILED).build();
         } catch (BIGWebNoResultsException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(NO_RESULTS).build();
@@ -118,7 +118,7 @@ public class RestApi {
             results = new BIGService().doRequest(bigNumber);
         } catch (BIGRequestException e) {
             // This should indicate a problem on their end or with the connection, not on our side.
-            System.out.println("BIG request error: " + e.getMessage());
+            logger.error("BIG request error: " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(BIG_REQUEST_FAILED).build();
         }
 
