@@ -220,9 +220,32 @@ public class RestApi {
             return Response.status(Response.Status.BAD_REQUEST).entity(NO_RESULTS).build();
         }
 
+        // Create an AttributeDisjunctionList to match the original request
+        AttributeDisjunctionList requestAttrs = new AttributeDisjunctionList(4);
+        // Initials
+        AttributeIdentifier attributeInitialsID = new AttributeIdentifier(conf.getInitialsAttribute());
+        AttributeDisjunction attributeInitialDisjunction = new AttributeDisjunction("Initials", attributeInitialsID);
+        attributeInitialDisjunction.getValues().put(attributeInitialsID, initials);
+        requestAttrs.add(attributeInitialDisjunction);
+        // Family name
+        AttributeIdentifier attributeFamilyNameID = new AttributeIdentifier(conf.getFamilyNameAttribute());
+        AttributeDisjunction attributeFamilyNameDisjunction = new AttributeDisjunction("Family name", attributeFamilyNameID);
+        attributeFamilyNameDisjunction.getValues().put(attributeFamilyNameID, familyName);
+        requestAttrs.add(attributeFamilyNameDisjunction);
+        // Date of birth
+        AttributeIdentifier attributeDateOfBirthID = new AttributeIdentifier(conf.getDateOfBirthAttribute());
+        AttributeDisjunction attributeDateOfBirthDisjunction = new AttributeDisjunction("Date of birth", attributeDateOfBirthID);
+        attributeDateOfBirthDisjunction.getValues().put(attributeDateOfBirthID, dateOfBirthString);
+        requestAttrs.add(attributeDateOfBirthDisjunction);
+        // Gender
+        AttributeIdentifier attributeGenderID = new AttributeIdentifier(conf.getGenderAttribute());
+        AttributeDisjunction attributeGenderDisjunction = new AttributeDisjunction("Gender", attributeGenderID);
+        attributeGenderDisjunction.getValues().put(attributeGenderID, gender);
+        requestAttrs.add(attributeGenderDisjunction);
+
         // Now generate the credential issuing request!
         // The user of this API can use this to get the actual credential from the IRMA API server.
-        IdentityProviderRequest ipRequest = new IdentityProviderRequest("", new IssuingRequest(null, null, credentials), 120);
+        IdentityProviderRequest ipRequest = new IdentityProviderRequest("", new IssuingRequest(null, null, credentials, requestAttrs), 120);
         return Response.ok(ApiClient.getSignedIssuingJWT(ipRequest,
                 conf.getServerName(),
                 conf.getHumanReadableName(),
