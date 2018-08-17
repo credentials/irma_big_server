@@ -48,7 +48,7 @@ public class BIGWebSearch {
         }
     }
 
-    private URI constructSearchURI(String name, Date dateOfBirth, String gender) throws BIGRequestException {
+    private static URI constructSearchURI(String name, Date dateOfBirth, String gender) throws BIGRequestException {
         // Build the search query
         StringBuilder queryBuilder = new StringBuilder();
         // Name is always present
@@ -78,7 +78,7 @@ public class BIGWebSearch {
         }
     }
 
-    private URI constructDetailURI(String hcpNumber) throws BIGRequestException {
+    private static URI constructDetailURI(String hcpNumber) throws BIGRequestException {
         // Build the path
         StringBuilder pathBuilder = new StringBuilder();
         pathBuilder.append("/api/search/criteria/details/");
@@ -90,7 +90,7 @@ public class BIGWebSearch {
         }
     }
 
-    public String getBIGNumber(String name, Date dateOfBirth, String gender) throws BIGRequestException, BIGWebNoResultsException, BIGWebTooManyException {
+    public static String getBIGNumber(String name, Date dateOfBirth, String gender) throws BIGRequestException, BIGWebNoResultsException, BIGWebTooManyException {
         // Construct search URI
         URI searchURI = constructSearchURI(name, dateOfBirth, gender);
 

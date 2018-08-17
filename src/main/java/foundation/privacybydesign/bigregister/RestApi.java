@@ -100,7 +100,7 @@ public class RestApi {
 
         String bigNumber;
         try {
-            bigNumber = new BIGWebSearch().getBIGNumber(familyName, dateOfBirth, gender);
+            bigNumber = BIGWebSearch.getBIGNumber(familyName, dateOfBirth, gender);
         } catch (BIGRequestException e) {
             // This should indicate a problem on their end or with the connection, not on our side.
             logger.error("BIG request error: " + e.getMessage());
@@ -115,7 +115,7 @@ public class RestApi {
 
         List<ListHcpApprox4> results;
         try {
-            results = new BIGService().doRequest(bigNumber);
+            results = BIGService.doRequest(bigNumber);
         } catch (BIGRequestException e) {
             // This should indicate a problem on their end or with the connection, not on our side.
             logger.error("BIG request error: " + e.getMessage());

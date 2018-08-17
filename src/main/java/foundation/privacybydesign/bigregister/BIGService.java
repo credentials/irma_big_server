@@ -92,7 +92,7 @@ public class BIGService {
 
     // Provide a simple method for the SOAP API.
     // It either returns the requested values, or returns an error.
-    public List<ListHcpApprox4> doRequest(String bigNumber)
+    public static List<ListHcpApprox4> doRequest(String bigNumber)
             throws BIGRequestException {
         // Create the SOAP client
         PublicV4 service = new PublicV4();
