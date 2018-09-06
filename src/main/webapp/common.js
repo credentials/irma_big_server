@@ -2,13 +2,6 @@
 
 var BIGSERVER = '/tomcat/irma_big_server/api/';
 
-var MESSAGES = {
-    'error:no-results':         'Searching the BIG-register with your data was unsuccesful. Please contact irma \'at\' privacybydesign.foundation if you do have a BIG-registration.',
-    'error:multiple-results':   'With your data multiple results have been found in the BIG-register; therefore, no unambiguous attributes can be issued.',
-    'error:invalid-jwt':        'JWT cannot be verified - is there an asynchrony of clocks?',
-    'error:big-request-failed': 'Communication with the BIG-register failed.',
-};
-
 var credentialsJWT;
 
 function init() {
@@ -25,12 +18,12 @@ function requestAttributes() {
     // Indicate progress
     $('#result-alert').addClass('hidden');
     $('#btn-request').prop('disabled', true);
-    showProgress('Requesting disclosure request...');
+    showProgress(MESSAGES['request-disclosure-request']);
 
     $.ajax({
         url: BIGSERVER + 'request-search-attrs',
     }).done(function(jwt) {
-        showProgress('Requesting iDIN attributes...');
+        showProgress(MESSAGES['request-idin-attributes']);
         IRMA.verify(jwt,
         requestAttributesFromBackend, // success
         function(message) { // cancel
@@ -39,16 +32,16 @@ function requestAttributes() {
             console.warn('user cancelled disclosure');
         }, function(errormsg) { // error
             console.error('could not request iDIN attributes:', errormsg);
-            requestEnd('danger', 'iDIN data cannot be collected', errormsg);
+            requestEnd('danger', MESSAGES['error-cannot-request-idin'], errormsg);
         });
     }).fail(function(data) {
-        requestEnd('danger', 'Connection with the backend server failed');
+        requestEnd('danger', MESSAGES['error-cannot-connect-backend']);
     });
 }
 
 function requestAttributesFromBackend(disclosureJWT) {
     console.log('got disclosure result JWT:', disclosureJWT);
-    showProgress('Requesting BIG credentials...');
+    showProgress(MESSAGES['request-big-credentials']);
     $.ajax(BIGSERVER + 'request-attrs', {
         type: 'POST',
         data: disclosureJWT,
@@ -70,10 +63,13 @@ function requestAttributesFromBackend(disclosureJWT) {
             $('#attributes .startdate').text(credentials.iprequest.request.credentials[0].attributes.startdate);
             $('#attributes .profession').text(credentials.iprequest.request.credentials[0].attributes.profession);
             $('#attributes .specialism').text(credentials.iprequest.request.credentials[0].attributes.specialism);
-            showProgress('Waiting for OK button...'); // invisible to user
+            showProgress('Waiting for load button...'); // invisible to user
         })
         .fail(function(jqXhr, textStatus) {
             var errormsg = jqXhr.responseText;
+            if (errormsg === undefined) {
+                errormsg = 'error:connection';
+            }
             console.error('failed to request credentials:', textStatus, errormsg);
 
             var message;
@@ -92,13 +88,13 @@ function requestAttributesFromBackend(disclosureJWT) {
                 // due to some issue on the client side - these are really our
                 // fault.
                 // The actual error can be seen in the developer console.
-                message = 'Unknown problem';
+                message = MESSAGES['error-unknown'];
             }
 
             if (errormsg === 'error:no-results') {
-                requestEnd('danger', 'No registration was found in the BIG-register', message);
+                requestEnd('danger', MESSAGES['error-no-results-header'], message);
             } else {
-                requestEnd('danger', 'Credentials cannot be requested from the backend server', message);
+                requestEnd('danger', MESSAGES['error-backend-fail'], message);
             }
         });
 }
@@ -129,11 +125,11 @@ function requestEnd(result, message, errormsg) {
 }
 
 function issueAttributes() {
-    showProgress('Issuing credential...');
+    showProgress(MESSAGES['issue-start']);
     IRMA.issue(credentialsJWT,
         function() { // success
             console.log('issue success!');
-            requestEnd('success', 'Credential for the BIG-register released')
+            requestEnd('success', MESSAGES['issue-success'])
 
             // Go back to the start screen - we're done.
             $('#window-before-request').show();
@@ -146,7 +142,7 @@ function issueAttributes() {
         },
         function(errormsg) { // error
             console.error('error while issuing:', errormsg)
-            requestEnd('danger', 'BIG-credential cannot be released', errormsg);
+            requestEnd('danger', MESSAGES['issue-error'], errormsg);
 
             // Go back to the start screen to show the error.
             $('#window-before-request').show();
