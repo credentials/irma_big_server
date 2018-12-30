@@ -7,6 +7,10 @@ apply plugin: "org.akhikhl.gretty"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+war {
+    archiveName 'irma_big_server.war'
+}
+
 configurations {
     cxfTool
 }
