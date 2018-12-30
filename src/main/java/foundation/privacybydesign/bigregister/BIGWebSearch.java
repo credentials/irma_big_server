@@ -18,7 +18,7 @@ public class BIGWebSearch {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private static class BIGWebSearchEntry {
-        public String hcpNumber;
+        public String hcpCode;
 
         public BIGWebSearchEntry() {
         }
@@ -78,11 +78,11 @@ public class BIGWebSearch {
         }
     }
 
-    private static URI constructDetailURI(String hcpNumber) throws BIGRequestException {
+    private static URI constructDetailURI(String hcpCode) throws BIGRequestException {
         // Build the path
         StringBuilder pathBuilder = new StringBuilder();
         pathBuilder.append("/api/search/criteria/details/");
-        pathBuilder.append(hcpNumber);
+        pathBuilder.append(hcpCode);
         try {
             return new URI("https", "zoeken.bigregister.nl", pathBuilder.toString(), null, null);
         } catch (URISyntaxException e) {
@@ -117,7 +117,7 @@ public class BIGWebSearch {
         }
 
         // Build the detail query
-        URI detailURI = constructDetailURI(searchResult.hcps.get(0).hcpNumber);
+        URI detailURI = constructDetailURI(searchResult.hcps.get(0).hcpCode);
 
         // Contact server
         Response detailResponse = client.target(detailURI).request(MediaType.APPLICATION_JSON).get();
