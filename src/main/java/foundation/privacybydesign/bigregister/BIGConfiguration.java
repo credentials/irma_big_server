@@ -1,6 +1,7 @@
 package foundation.privacybydesign.bigregister;
 
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.irmacard.api.common.AttributeDisjunction;
 import org.irmacard.api.common.util.GsonUtil;
 import foundation.privacybydesign.common.BaseConfiguration;
 
@@ -23,10 +24,10 @@ public class BIGConfiguration extends BaseConfiguration {
     private String big_credential = "";
     private String server_name = "";
     private String human_name = "";
-    private String family_name_attribute = "";
-    private String initials_attribute = "";
-    private String gender_attribute = "";
-    private String date_of_birth_attribute = "";
+    private AttributeDisjunction family_name_attributes;
+    private AttributeDisjunction initials_attributes;
+    private AttributeDisjunction gender_attributes;
+    private AttributeDisjunction date_of_birth_attributes;
     int disclosure_jwt_max_age = 60 * 1000; // 60s
 
     // Our configuration
@@ -71,13 +72,19 @@ public class BIGConfiguration extends BaseConfiguration {
         return big_credential;
     }
 
-    public String getInitialsAttribute() { return initials_attribute; }
+    public AttributeDisjunction getInitialsAttribute() { return copyDisjunction(initials_attributes); }
 
-    public String getFamilyNameAttribute() { return family_name_attribute; }
+    public AttributeDisjunction getFamilyNameAttribute() { return copyDisjunction(family_name_attributes); }
 
-    public String getDateOfBirthAttribute() { return date_of_birth_attribute; }
+    public AttributeDisjunction getDateOfBirthAttribute() { return copyDisjunction(date_of_birth_attributes); }
 
-    public String getGenderAttribute() { return gender_attribute; }
+    public AttributeDisjunction getGenderAttribute() { return copyDisjunction(gender_attributes); }
+
+    private AttributeDisjunction copyDisjunction(AttributeDisjunction disjunction) {
+        AttributeDisjunction retval = new AttributeDisjunction(disjunction.getLabel());
+        retval.addAll(disjunction);
+        return retval;
+    }
 
     public String getServerName() { return server_name; }
 

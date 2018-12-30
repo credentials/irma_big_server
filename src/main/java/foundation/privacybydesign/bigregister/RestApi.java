@@ -46,15 +46,22 @@ public class RestApi {
 
         // Request the following iDIN properties for verification: name, birth date, gender
         AttributeDisjunctionList requestAttrs = new AttributeDisjunctionList(4);
-        requestAttrs.add(new AttributeDisjunction("Initials", conf.getInitialsAttribute()));
-        requestAttrs.add(new AttributeDisjunction("Family name", conf.getFamilyNameAttribute()));
-        requestAttrs.add(new AttributeDisjunction("Date of birth", conf.getDateOfBirthAttribute()));
-        requestAttrs.add(new AttributeDisjunction("Gender", conf.getGenderAttribute()));
+        requestAttrs.add(conf.getInitialsAttribute());
+        requestAttrs.add(conf.getFamilyNameAttribute());
+        requestAttrs.add(conf.getDateOfBirthAttribute());
+        requestAttrs.add(conf.getGenderAttribute());
         return ApiClient.getDisclosureJWT(requestAttrs,
                 conf.getServerName(),
                 conf.getHumanReadableName(),
                 conf.getJwtAlgorithm(),
                 conf.getPrivateKey());
+    }
+
+    private String findAttributeInMap(Map<AttributeIdentifier, String> map, AttributeDisjunction disjunction) {
+        for (AttributeIdentifier attr : disjunction)
+            if (map.containsKey(attr))
+                return map.get(attr);
+        return null;
     }
 
     // Request the BIG credential, based on iDIN attributes.
@@ -78,10 +85,10 @@ public class RestApi {
             return Response.status(Response.Status.BAD_REQUEST).entity(INVALID_JWT).build();
         }
 
-        String initials = disclosureAttrs.get(new AttributeIdentifier(conf.getInitialsAttribute()));
-        String familyName = disclosureAttrs.get(new AttributeIdentifier(conf.getFamilyNameAttribute()));
-        String gender = disclosureAttrs.get(new AttributeIdentifier(conf.getGenderAttribute()));
-        String dateOfBirthString = disclosureAttrs.get(new AttributeIdentifier(conf.getDateOfBirthAttribute()));
+        String initials = findAttributeInMap(disclosureAttrs, conf.getInitialsAttribute());
+        String familyName = findAttributeInMap(disclosureAttrs, conf.getFamilyNameAttribute());
+        String gender = findAttributeInMap(disclosureAttrs, conf.getGenderAttribute());
+        String dateOfBirthString = findAttributeInMap(disclosureAttrs, conf.getDateOfBirthAttribute());
 
         // These attributes can be set for debugging purposes - to impersonate someone else.
         // Must only be used in a test environment!
@@ -223,24 +230,20 @@ public class RestApi {
         // Create an AttributeDisjunctionList to match the original request
         AttributeDisjunctionList requestAttrs = new AttributeDisjunctionList(4);
         // Initials
-        AttributeIdentifier attributeInitialsID = new AttributeIdentifier(conf.getInitialsAttribute());
-        AttributeDisjunction attributeInitialDisjunction = new AttributeDisjunction("Initials", attributeInitialsID);
-        attributeInitialDisjunction.getValues().put(attributeInitialsID, initials);
+        AttributeDisjunction attributeInitialDisjunction = conf.getInitialsAttribute();
+        putExpectedValue(attributeInitialDisjunction, initials);
         requestAttrs.add(attributeInitialDisjunction);
         // Family name
-        AttributeIdentifier attributeFamilyNameID = new AttributeIdentifier(conf.getFamilyNameAttribute());
-        AttributeDisjunction attributeFamilyNameDisjunction = new AttributeDisjunction("Family name", attributeFamilyNameID);
-        attributeFamilyNameDisjunction.getValues().put(attributeFamilyNameID, familyName);
+        AttributeDisjunction attributeFamilyNameDisjunction = conf.getFamilyNameAttribute();
+        putExpectedValue(attributeFamilyNameDisjunction, familyName);
         requestAttrs.add(attributeFamilyNameDisjunction);
         // Date of birth
-        AttributeIdentifier attributeDateOfBirthID = new AttributeIdentifier(conf.getDateOfBirthAttribute());
-        AttributeDisjunction attributeDateOfBirthDisjunction = new AttributeDisjunction("Date of birth", attributeDateOfBirthID);
-        attributeDateOfBirthDisjunction.getValues().put(attributeDateOfBirthID, dateOfBirthString);
+        AttributeDisjunction attributeDateOfBirthDisjunction = conf.getDateOfBirthAttribute();
+        putExpectedValue(attributeDateOfBirthDisjunction, dateOfBirthString);
         requestAttrs.add(attributeDateOfBirthDisjunction);
         // Gender
-        AttributeIdentifier attributeGenderID = new AttributeIdentifier(conf.getGenderAttribute());
-        AttributeDisjunction attributeGenderDisjunction = new AttributeDisjunction("Gender", attributeGenderID);
-        attributeGenderDisjunction.getValues().put(attributeGenderID, gender);
+        AttributeDisjunction attributeGenderDisjunction = conf.getGenderAttribute();
+        putExpectedValue(attributeGenderDisjunction, gender);
         requestAttrs.add(attributeGenderDisjunction);
 
         // Now generate the credential issuing request!
@@ -252,5 +255,10 @@ public class RestApi {
                 conf.getJwtAlgorithm(),
                 conf.getPrivateKey() // throws KeyManagementException, but this should not happen with a proper configuration
         ), MediaType.TEXT_PLAIN).build();
+    }
+
+    private void putExpectedValue(AttributeDisjunction disjunction, String value) {
+        for (AttributeIdentifier attr : disjunction)
+            disjunction.getValues().put(attr, value);
     }
 }
