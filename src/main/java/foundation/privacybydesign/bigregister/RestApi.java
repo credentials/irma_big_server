@@ -143,8 +143,19 @@ public class RestApi {
         }
 
         ListHcpApprox4 result = results.get(0);
-        if (!result.getBirthSurname().equals(familyName) ||
-                !result.getInitial().substring(0, 1).equals(initials.substring(0, 1))) {
+        boolean lastnameMatch = false;
+        if (result.getBirthSurname().equals(familyName)) {
+            // Lastname matches exactly.
+            lastnameMatch = true;
+        } else if (result.getPrefix() != null && (result.getPrefix() + " " + result.getBirthSurname()).equals(familyName)) {
+            // Lastname has a prefix. Banks often put the prefix in the lastname
+            // field, while for BIG it differs (see above). Sometimes, the
+            // prefix is inserted into the last name, sometimes it is a separate
+            // field. In this case, it is apparently a separate field in the BIG
+            // database.
+            lastnameMatch = true;
+        }
+        if (!lastnameMatch || !result.getInitial().substring(0, 1).equals(initials.substring(0, 1))) {
             // The 'familyName' is the birth family name, so we're OK here
             // even if people marry and change their last name.
             // The initial is a bit more difficult, I'm not sure people will always use the same initials.
