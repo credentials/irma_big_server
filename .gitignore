@@ -2,3 +2,5 @@ build
 config.json
 *.der
 .gradle/
+webapp/node_modules
+webapp/build
