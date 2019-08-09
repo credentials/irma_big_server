@@ -1,7 +1,5 @@
 'use strict';
 
-var BIGSERVER = '/tomcat/irma_big_server/api/';
-
 var credentialsJWT;
 
 function init() {
@@ -21,19 +19,22 @@ function requestAttributes() {
     showProgress(MESSAGES['request-disclosure-request']);
 
     $.ajax({
-        url: BIGSERVER + 'request-search-attrs',
+        url: CONF.BIGSERVER + 'request-search-attrs',
     }).done(function(jwt) {
         showProgress(MESSAGES['request-idin-attributes']);
-        IRMA.verify(jwt,
-        requestAttributesFromBackend, // success
-        function(message) { // cancel
-            requestEnd('cancel');
-            // The user explicitly cancelled the request, so do nothing.
-            console.warn('user cancelled disclosure');
-        }, function(errormsg) { // error
-            console.error('could not request iDIN attributes:', errormsg);
-            requestEnd('danger', MESSAGES['error-cannot-request-idin'], errormsg);
-        });
+        irma.startSession(CONF.IRMASERVER,jwt)
+            .then(({ sessionPtr, token }) => irma.handleSession(sessionPtr, {server: CONF.IRMASERVER, token, resultJwt: true}))
+            .then(requestAttributesFromBackend)
+            .catch((err) => {
+                if (err === irma.SessionStatus.Cancelled) {
+                    requestEnd('cancel');
+                    // The user explicitly cancelled the request, so do nothing.
+                    console.warn('user cancelled disclosure');
+                } else {
+                    console.error('could not request iDIN attributes:', err);
+                    requestEnd('danger', MESSAGES['error-cannot-request-idin'], err);
+                }
+            });
     }).fail(function(data) {
         requestEnd('danger', MESSAGES['error-cannot-connect-backend']);
     });
@@ -42,7 +43,7 @@ function requestAttributes() {
 function requestAttributesFromBackend(disclosureJWT) {
     console.log('got disclosure result JWT:', disclosureJWT);
     showProgress(MESSAGES['request-big-credentials']);
-    $.ajax(BIGSERVER + 'request-attrs', {
+    $.ajax(CONF.BIGSERVER + 'request-attrs', {
         type: 'POST',
         data: disclosureJWT,
         processData: false, // unnecessary as we're sending a string
@@ -126,29 +127,29 @@ function requestEnd(result, message, errormsg) {
 
 function issueAttributes() {
     showProgress(MESSAGES['issue-start']);
-    IRMA.issue(credentialsJWT,
-        function() { // success
+    irma.startSession(CONF.IRMASERVER, credentialsJWT)
+        .then(()=>{
             console.log('issue success!');
-            requestEnd('success', MESSAGES['issue-success'])
+            equestEnd('success', MESSAGES['issue-success'])
 
             // Go back to the start screen - we're done.
             $('#window-before-request').show();
             $('#window-after-request').hide();
-        },
-        function(msg) { // cancel
-            console.warn('cancelled while issuing:', msg);
-            requestEnd('cancel');
-            // The user can try again now, or press 'cancel' on the issue screen.
-        },
-        function(errormsg) { // error
-            console.error('error while issuing:', errormsg)
-            requestEnd('danger', MESSAGES['issue-error'], errormsg);
+        })
+        .catch((err) => {
+            if (err === irma.SessionStatus.Cancelled) {
+                console.warn('cancelled while issuing:', msg);
+                requestEnd('cancel');
+                // The user can try again now, or press 'cancel' on the issue screen.
+            } else {
+                console.error('error while issuing:', errormsg)
+                requestEnd('danger', MESSAGES['issue-error'], errormsg);
 
-            // Go back to the start screen to show the error.
-            $('#window-before-request').show();
-            $('#window-after-request').hide();
-        }
-    );
+                // Go back to the start screen to show the error.
+                $('#window-before-request').show();
+                $('#window-after-request').hide();
+            }
+        });
 }
 
 function cancelAttributes() {
