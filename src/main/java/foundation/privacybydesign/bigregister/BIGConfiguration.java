@@ -16,6 +16,10 @@ import java.security.PublicKey;
 public class BIGConfiguration extends BaseConfiguration {
     private static BIGConfiguration instance;
     private static final String CONFIG_FILENAME = "config.json";
+    
+    static {
+    	BaseConfiguration.confDirName = "irma_big_issuer";
+    }
 
     // JSON configuration properties (with default values)
     private String api_server_public_key = "";
