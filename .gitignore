@@ -4,3 +4,4 @@ config.json
 .gradle/
 webapp/node_modules
 webapp/build
+artifacts
