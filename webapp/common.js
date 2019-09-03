@@ -22,7 +22,7 @@ function requestAttributes() {
         url: CONF.BIGSERVER + 'request-search-attrs',
     }).done(function(jwt) {
         showProgress(MESSAGES['request-idin-attributes']);
-        irma.startSession(CONF.IRMASERVER,jwt)
+        irma.startSession(CONF.IRMASERVER,jwt,"publickey")
             .then(({ sessionPtr, token }) => irma.handleSession(sessionPtr, {server: CONF.IRMASERVER, token, resultJwt: true}))
             .then(requestAttributesFromBackend)
             .catch((err) => {
@@ -127,7 +127,7 @@ function requestEnd(result, message, errormsg) {
 
 function issueAttributes() {
     showProgress(MESSAGES['issue-start']);
-    irma.startSession(CONF.IRMASERVER, credentialsJWT)
+    irma.startSession(CONF.IRMASERVER, credentialsJWT, "publickey")
         .then(()=>{
             console.log('issue success!');
             equestEnd('success', MESSAGES['issue-success'])
