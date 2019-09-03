@@ -5,8 +5,28 @@
 	"big_credential": "big",
 	"server_name": "irma_big_server",
 	"human_name": "Privacy by Design Foundation",
-	"family_name_attribute": "pbdf.pbdf.idin.familyname",
-	"initials_attribute": "pbdf.pbdf.idin.initials",
-	"gender_attribute": "pbdf.pbdf.idin.gender",
-	"date_of_birth_attribute": "pbdf.pbdf.idin.dateofbirth"
+	"family_name_attributes": {
+        "label": "Achternaam",
+        "attributes": [
+            "pbdf.pbdf.idin.familyname"
+        ]
+    },
+    "initials_attributes": {
+        "label": "Initialen",
+        "attributes": [
+            "pbdf.pbdf.idin.initials"
+        ]
+    },
+    "gender_attributes": {
+        "label": "Geslacht",
+        "attributes": [
+            "pbdf.pbdf.idin.gender"
+        ]
+    },
+    "date_of_birth_attributes": {
+        "label": "Geboortedatum",
+        "attributes": [
+            "pbdf.pbdf.idin.dateofbirth"
+        ]
+    }
 }
