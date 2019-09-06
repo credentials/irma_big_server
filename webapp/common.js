@@ -143,8 +143,8 @@ function issueAttributes() {
                 requestEnd('cancel');
                 // The user can try again now, or press 'cancel' on the issue screen.
             } else {
-                console.error('error while issuing:', errormsg)
-                requestEnd('danger', MESSAGES['issue-error'], errormsg);
+                console.error('error while issuing:', err)
+                requestEnd('danger', MESSAGES['issue-error'], err);
 
                 // Go back to the start screen to show the error.
                 $('#window-before-request').show();
