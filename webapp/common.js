@@ -23,7 +23,7 @@ function requestAttributes() {
     }).done(function(jwt) {
         showProgress(MESSAGES['request-idin-attributes']);
         irma.startSession(CONF.IRMASERVER,jwt,"publickey")
-            .then(({ sessionPtr, token }) => irma.handleSession(sessionPtr, {server: CONF.IRMASERVER, token, resultJwt: true}))
+            .then(({ sessionPtr, token }) => irma.handleSession(sessionPtr, {server: CONF.IRMASERVER, token, legacyResultJwt: true}))
             .then(requestAttributesFromBackend)
             .catch((err) => {
                 if (err === irma.SessionStatus.Cancelled) {
@@ -128,9 +128,10 @@ function requestEnd(result, message, errormsg) {
 function issueAttributes() {
     showProgress(MESSAGES['issue-start']);
     irma.startSession(CONF.IRMASERVER, credentialsJWT, "publickey")
+        .then(({ sessionPtr, token }) => irma.handleSession(sessionPtr, {server: CONF.IRMASERVER, token}))
         .then(()=>{
             console.log('issue success!');
-            equestEnd('success', MESSAGES['issue-success'])
+            requestEnd('success', MESSAGES['issue-success'])
 
             // Go back to the start screen - we're done.
             $('#window-before-request').show();
